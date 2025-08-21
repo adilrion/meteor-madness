@@ -88,7 +88,7 @@ export class MeteorUtils {
         return [
             {
                 id: "perseid_001",
-                name: "Perseid Fireball",
+                name: "Perseid Alpha Fireball",
                 latitude: 57.0,
                 longitude: -2.0,
                 altitude: 120000, // 120 km
@@ -99,7 +99,7 @@ export class MeteorUtils {
             },
             {
                 id: "geminid_002",
-                name: "Geminid Meteor",
+                name: "Geminid Streak",
                 latitude: 32.0,
                 longitude: -110.0,
                 altitude: 95000, // 95 km
@@ -110,7 +110,7 @@ export class MeteorUtils {
             },
             {
                 id: "sporadic_003",
-                name: "Sporadic Meteor",
+                name: "Australian Bolide",
                 latitude: -23.5,
                 longitude: 138.0,
                 altitude: 110000, // 110 km
@@ -120,7 +120,7 @@ export class MeteorUtils {
             },
             {
                 id: "leonid_004",
-                name: "Leonid Meteor",
+                name: "Leonid Fast Mover",
                 latitude: 22.0,
                 longitude: -158.0,
                 altitude: 130000, // 130 km
@@ -129,7 +129,187 @@ export class MeteorUtils {
                 timestamp: new Date(), // Now
                 shower: "Leonids",
             },
+            {
+                id: "quadrantid_005",
+                name: "Quadrantid Bright",
+                latitude: 49.0,
+                longitude: 15.0,
+                altitude: 100000,
+                velocity: 41.0,
+                mass: 0.03,
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 45), // 45 min ago
+                shower: "Quadrantids",
+            },
+            {
+                id: "lyrid_006",
+                name: "Lyrid Meteor",
+                latitude: 34.0,
+                longitude: 18.0,
+                altitude: 105000,
+                velocity: 49.0,
+                mass: 0.008,
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 12), // 12 min ago
+                shower: "Lyrids",
+            },
+            {
+                id: "delta_aquarid_007",
+                name: "Delta Aquarid Twin",
+                latitude: -16.0,
+                longitude: -47.0,
+                altitude: 88000,
+                velocity: 41.0,
+                mass: 0.015,
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 8), // 8 min ago
+                shower: "Delta Aquarids",
+            },
+            {
+                id: "sporadic_008",
+                name: "Pacific Fireball",
+                latitude: 15.0,
+                longitude: -155.0,
+                altitude: 115000,
+                velocity: 38.0,
+                mass: 0.25, // Large sporadic
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 20), // 20 min ago
+            },
+            {
+                id: "sporadic_009",
+                name: "European Bright Meteor",
+                latitude: 48.8,
+                longitude: 2.3,
+                altitude: 92000,
+                velocity: 28.0,
+                mass: 0.004,
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 35), // 35 min ago
+            },
+            {
+                id: "perseid_010",
+                name: "Perseid Beta Trail",
+                latitude: 58.5,
+                longitude: -3.2,
+                altitude: 125000,
+                velocity: 61.0,
+                mass: 0.12,
+                timestamp: new Date(currentDate.getTime() - 1000 * 60 * 2), // 2 min ago
+                shower: "Perseids",
+            },
         ];
+    }
+
+    /**
+     * Get meteor madness specific enhanced data with impact predictions
+     */
+    static getMeteorMadnessData(): Array<
+        MeteorEvent & {
+            riskLevel: "Low" | "Medium" | "High";
+            predictedPath: { lat: number; lon: number }[];
+            detectingStations: string[];
+            spectralData?: string;
+        }
+    > {
+        const baseData = this.getRealisticMeteorData();
+
+        return baseData.map((meteor) => ({
+            ...meteor,
+            riskLevel:
+                meteor.mass > 0.1
+                    ? "High"
+                    : meteor.mass > 0.01
+                    ? "Medium"
+                    : "Low",
+            predictedPath: this.generateMeteorPath(
+                meteor.latitude,
+                meteor.longitude
+            ),
+            detectingStations: this.getDetectingStations(
+                meteor.latitude,
+                meteor.longitude
+            ),
+            spectralData:
+                meteor.velocity > 50
+                    ? "Iron-Nickel"
+                    : meteor.velocity > 30
+                    ? "Stony"
+                    : "Carbonaceous",
+        }));
+    }
+
+    /**
+     * Generate realistic meteor trajectory path
+     */
+    private static generateMeteorPath(
+        startLat: number,
+        startLon: number
+    ): { lat: number; lon: number }[] {
+        const path = [];
+        const steps = 10;
+
+        for (let i = 0; i < steps; i++) {
+            const progress = i / (steps - 1);
+            path.push({
+                lat: startLat + (Math.random() - 0.5) * 2 - progress * 5,
+                lon: startLon + (Math.random() - 0.5) * 2 + progress * 3,
+            });
+        }
+
+        return path;
+    }
+
+    /**
+     * Get detecting stations based on meteor location
+     */
+    private static getDetectingStations(_lat: number, _lon: number): string[] {
+        const allStations = [
+            "NASA Meteor Center",
+            "ESA Deep Space Network",
+            "JAXA Observatory",
+            "Russian Space Agency",
+            "Chinese Space Station",
+            "Australian Desert Observatory",
+            "Atacama Detection Array",
+            "Nordic Meteor Network",
+            "SETI Institute",
+            "Palomar Observatory",
+            "Arecibo Backup Station",
+            "Very Large Array",
+        ];
+
+        // Return 2-4 random stations based on location
+        const numStations = Math.floor(Math.random() * 3) + 2;
+        return allStations
+            .sort(() => 0.5 - Math.random())
+            .slice(0, numStations);
+    }
+
+    /**
+     * Get current global meteor activity level
+     */
+    static getCurrentActivityLevel(): {
+        level: "Quiet" | "Normal" | "Active" | "High" | "Extreme";
+        meteorsPerHour: number;
+        description: string;
+        color: string;
+    } {
+        const hour = new Date().getHours();
+        const isNightTime = hour >= 22 || hour <= 6;
+
+        // Peak activity during night hours
+        if (isNightTime) {
+            return {
+                level: "High",
+                meteorsPerHour: Math.floor(Math.random() * 200) + 300,
+                description:
+                    "Peak nighttime activity with multiple active showers",
+                color: "text-orange-400",
+            };
+        } else {
+            return {
+                level: "Normal",
+                meteorsPerHour: Math.floor(Math.random() * 100) + 50,
+                description: "Daytime background activity",
+                color: "text-green-400",
+            };
+        }
     }
 
     /**
