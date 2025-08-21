@@ -15,8 +15,8 @@ import {
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 
-// Dynamic import to avoid SSR issues with Cesium
-const GlobeSimulation = dynamic(() => import('./globe-simulation'), { ssr: false });
+// Dynamic import to avoid SSR issues with Three.js
+const ThreeGlobe = dynamic(() => import('./three-globe'), { ssr: false });
 
 const GlobeSimulationBanner = () => {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -79,9 +79,9 @@ const GlobeSimulationBanner = () => {
 
   return (
     <div className="relative bg-gradient-to-br from-black via-purple-900/50 to-blue-900/30 text-white overflow-hidden min-h-screen">
-      {/* Globe Simulation Background with Animated Meteors */}
+      {/* Three.js Globe Background with Animated Meteors */}
       <div className="absolute inset-0 opacity-80">
-        <GlobeSimulation isPlaying={isPlaying} />
+        <ThreeGlobe isPlaying={isPlaying} />
       </div>
 
       {/* Overlay gradient for better text readability */}
