@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
+import GlobeSimulationBanner from "@/components/common/3d-globe-simulation-banner";
 
 export default function Home() {
   return (
     <div>
-      <Button>button</Button>
+      <GlobeSimulationBanner />
     </div>
   );
 }
