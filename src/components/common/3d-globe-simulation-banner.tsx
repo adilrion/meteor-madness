@@ -12,7 +12,11 @@ import {
   TrendingUp,
   Zap
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+
+// Dynamic import to avoid SSR issues with Cesium
+const GlobeSimulation = dynamic(() => import('./globe-simulation'), { ssr: false });
 
 const GlobeSimulationBanner = () => {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -74,9 +78,17 @@ const GlobeSimulationBanner = () => {
   ];
 
   return (
-    <div className="relative bg-gradient-to-br from-black via-purple-900/50 to-blue-900/30 text-white overflow-hidden">
+    <div className="relative bg-gradient-to-br from-black via-purple-900/50 to-blue-900/30 text-white overflow-hidden min-h-screen">
+      {/* Globe Simulation Background with Animated Meteors */}
+      <div className="absolute inset-0 opacity-80">
+        <GlobeSimulation isPlaying={isPlaying} />
+      </div>
+
+      {/* Overlay gradient for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/30 via-purple-900/20 to-blue-900/30"></div>
+
       {/* Animated Background Elements */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-10">
         <div className="absolute top-10 left-10 w-2 h-2 bg-white rounded-full animate-pulse"></div>
         <div className="absolute top-20 right-20 w-1 h-1 bg-yellow-400 rounded-full animate-ping"></div>
         <div className="absolute bottom-20 left-1/4 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
@@ -88,7 +100,7 @@ const GlobeSimulationBanner = () => {
         <div className="absolute top-32 right-10 w-px h-16 bg-gradient-to-b from-transparent via-yellow-400 to-transparent transform rotate-12 animate-pulse delay-500"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
         {/* Main Hero Content */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center space-x-3 mb-6">
@@ -169,8 +181,8 @@ const GlobeSimulationBanner = () => {
                 <div className="text-sm text-gray-300 mb-1">Peak: {shower.peak}</div>
                 <div className="flex items-center justify-between">
                   <span className={`text-xs px-2 py-1 rounded-full ${shower.status === 'Active' ? 'bg-green-500/20 text-green-400' :
-                      shower.status === 'Building' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-blue-500/20 text-blue-400'
+                    shower.status === 'Building' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-blue-500/20 text-blue-400'
                     }`}>
                     {shower.status}
                   </span>
