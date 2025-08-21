@@ -1,36 +1,38 @@
 {
-  "name": "meteor-madness",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.2.3",
-    "@types/cesium": "^1.67.14",
-    "cesium": "^1.132.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.540.0",
-    "next": "15.5.0",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "resium": "^1.19.0-beta.1",
-    "tailwind-merge": "^3.3.1"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.0",
-    "tailwindcss": "^4",
-    "tw-animate-css": "^1.3.7",
-    "typescript": "^5"
-  }
+    "name": "meteor-madness",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev --turbopack",
+        "build": "next build --turbopack",
+        "start": "next start",
+        "lint": "eslint"
+    },
+    "dependencies": {
+        "@radix-ui/react-slot": "^1.2.3",
+        "@types/cesium": "^1.67.14",
+        "cesium": "^1.132.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.540.0",
+        "next": "15.5.0",
+        "postinstall": "symlink-dir node_modules/cesium/Build/Cesium public/cesium",
+        "react": "19.1.0",
+        "react-dom": "19.1.0",
+        "resium": "^1.19.0-beta.1",
+        "tailwind-merge": "^3.3.1"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "eslint": "^9",
+        "eslint-config-next": "15.5.0",
+        "symlink-dir": "^6.0.5",
+        "tailwindcss": "^4",
+        "tw-animate-css": "^1.3.7",
+        "typescript": "^5"
+    }
 }
