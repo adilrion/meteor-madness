@@ -1,8 +1,14 @@
-import React from 'react'
+import { EnhancedSolarSystemVisualization } from '@/components/common/enhanced-solar-system'
 
 const UpcomingMeteor = () => {
   return (
-    <div>UpcomingMeteor</div>
+    <main className="min-h-screen bg-black">
+      <EnhancedSolarSystemVisualization
+        enableRealTimeData={true}
+        autoRefresh={true}
+        refreshInterval={60}
+      />
+    </main>
   )
 }
 
