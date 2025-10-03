@@ -19,7 +19,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-black/90 backdrop-blur-sm border-b border-purple-500/20 sticky top-0 z-50">
+    <nav className="bg-black/95 backdrop-blur-sm border-b border-purple-500/20 sticky top-0 z-50">
       <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}

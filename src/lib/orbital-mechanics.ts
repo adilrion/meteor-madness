@@ -211,8 +211,9 @@ export class OrbitalMechanics {
         density: number = 2000,
         impactAngle: number = 45
     ): number {
-        const mass = this.calculateMass(diameterKm, density);
-        const energy = this.calculateImpactEnergy(mass, velocityKmS);
+        // Note: For more accurate calculations, consider using:
+        // const mass = this.calculateMass(diameterKm, density);
+        // const energy = this.calculateImpactEnergy(mass, velocityKmS);
 
         // Simplified crater scaling (actual formula is more complex)
         // D_crater ≈ D_asteroid * (velocity / 12.6)^0.33 * sin(angle)^0.33
@@ -253,17 +254,30 @@ export class OrbitalMechanics {
     /**
      * Convert NASA NEO orbital data to Keplerian elements
      */
-    static parseNASAOrbitalData(orbitalData: any): KeplerianElements {
+    static parseNASAOrbitalData(orbitalData: {
+        semi_major_axis?: string | number;
+        eccentricity?: string | number;
+        inclination?: string | number;
+        ascending_node_longitude?: string | number;
+        perihelion_argument?: string | number;
+        mean_anomaly?: string | number;
+        epoch_osculation?: string | number;
+    }): KeplerianElements {
         return {
-            semiMajorAxis: parseFloat(orbitalData.semi_major_axis) || 1.0,
-            eccentricity: parseFloat(orbitalData.eccentricity) || 0.1,
-            inclination: parseFloat(orbitalData.inclination) || 0,
+            semiMajorAxis:
+                parseFloat(String(orbitalData.semi_major_axis ?? 1.0)) || 1.0,
+            eccentricity:
+                parseFloat(String(orbitalData.eccentricity ?? 0.1)) || 0.1,
+            inclination: parseFloat(String(orbitalData.inclination ?? 0)) || 0,
             longitudeOfAscendingNode:
-                parseFloat(orbitalData.ascending_node_longitude) || 0,
+                parseFloat(String(orbitalData.ascending_node_longitude ?? 0)) ||
+                0,
             argumentOfPerihelion:
-                parseFloat(orbitalData.perihelion_argument) || 0,
-            meanAnomaly: parseFloat(orbitalData.mean_anomaly) || 0,
-            epoch: parseFloat(orbitalData.epoch_osculation) || 2460000.5,
+                parseFloat(String(orbitalData.perihelion_argument ?? 0)) || 0,
+            meanAnomaly: parseFloat(String(orbitalData.mean_anomaly ?? 0)) || 0,
+            epoch:
+                parseFloat(String(orbitalData.epoch_osculation ?? 2460000.5)) ||
+                2460000.5,
         };
     }
 

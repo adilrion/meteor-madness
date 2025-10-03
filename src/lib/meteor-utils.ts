@@ -221,10 +221,7 @@ export class MeteorUtils {
                 meteor.latitude,
                 meteor.longitude
             ),
-            detectingStations: this.getDetectingStations(
-                meteor.latitude,
-                meteor.longitude
-            ),
+            detectingStations: this.getDetectingStations(),
             spectralData:
                 meteor.velocity > 50
                     ? "Iron-Nickel"
@@ -258,7 +255,7 @@ export class MeteorUtils {
     /**
      * Get detecting stations based on meteor location
      */
-    private static getDetectingStations(_lat: number, _lon: number): string[] {
+    private static getDetectingStations(): string[] {
         const allStations = [
             "NASA Meteor Center",
             "ESA Deep Space Network",

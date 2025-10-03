@@ -15,10 +15,22 @@ interface NEOStats {
   };
 }
 
+interface NEOItem {
+  id: string;
+  name: string;
+  estimated_diameter: { kilometers: { estimated_diameter_max: number } };
+  is_potentially_hazardous_asteroid: boolean;
+  close_approach_data: Array<{
+    close_approach_date: string;
+    miss_distance: { kilometers: string; lunar: string };
+    relative_velocity: { kilometers_per_second: string };
+  }>;
+}
+
 export default function NEOStatisticsDashboard() {
   const [stats, setStats] = useState<NEOStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [recentNEOs, setRecentNEOs] = useState<any[]>([]);
+  const [recentNEOs, setRecentNEOs] = useState<NEOItem[]>([]);
 
   useEffect(() => {
     loadData();
@@ -69,7 +81,7 @@ export default function NEOStatisticsDashboard() {
           <Database className="w-10 h-10 text-blue-400" />
           NASA NEO Database Statistics
         </h2>
-        <p className="text-gray-400">Real-time data from NASA's Near-Earth Object Web Service</p>
+        <p className="text-gray-400">Real-time data from NASA&apos;s Near-Earth Object Web Service</p>
       </div>
 
       {/* Main Stats Grid */}
@@ -207,8 +219,8 @@ export default function NEOStatisticsDashboard() {
                 <div
                   key={neo.id || index}
                   className={`p-4 rounded-lg border ${isPHA
-                      ? 'bg-red-900/20 border-red-500/30'
-                      : 'bg-slate-800/50 border-slate-600/30'
+                    ? 'bg-red-900/20 border-red-500/30'
+                    : 'bg-slate-800/50 border-slate-600/30'
                     } hover:bg-slate-700/50 transition-colors`}
                 >
                   <div className="flex items-start justify-between">
