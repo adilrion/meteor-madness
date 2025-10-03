@@ -69,7 +69,7 @@ export interface NEOAPIResponse {
 
 export class NASANEOService {
   private static readonly API_BASE = "https://api.nasa.gov/neo/rest/v1";
-  private static readonly API_KEY = "DEMO_KEY"; // Replace with your NASA API key
+  private static readonly API_KEY = "SWu1wR44l2FY8FP86j4N1uzppgfjCswbcWZJAcyv";
 
   /**
    * Get Near Earth Objects for a date range
