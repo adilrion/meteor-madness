@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, AlertTriangle, Database, Globe, Menu, Users, X, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, Database, Globe, Menu, Shield, Users, X, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -13,6 +13,7 @@ const Navbar = () => {
     { href: '/upcoming-meteor', label: 'Live Tracking', icon: Activity },
     { href: '/asteroid-threat', label: 'Threats', icon: AlertTriangle },
     { href: '/neo-explorer', label: 'NEO Explorer', icon: Database },
+    { href: '/safety-center', label: 'Safety Center', icon: Shield },
     { href: '/about', label: 'About Us', icon: Users },
     { href: '/contact', label: 'Contact', icon: Menu },
   ];
