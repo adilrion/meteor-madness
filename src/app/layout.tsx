@@ -1,10 +1,16 @@
+'use client';
 
 import Footer from "@/components/common/footer";
 import Navbar from "@/components/common/navbar";
-import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+
+// Dynamically import AI Chatbot to appear on all pages
+const AIChatbot = dynamic(() => import("@/components/common/ai-chatbot"), {
+  ssr: false,
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,11 +21,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "Meteor Madness - 3D Space Visualization",
-  description: "Visualize meteors and space phenomena in 3D using Cesium",
-};
 
 export default function RootLayout({
   children,
@@ -38,6 +39,9 @@ export default function RootLayout({
         {children}
 
         <Footer />
+
+        {/* AI Chatbot - Available on all pages */}
+        <AIChatbot />
       </body>
     </html>
   );
