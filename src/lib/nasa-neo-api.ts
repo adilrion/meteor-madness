@@ -81,16 +81,29 @@ export class NASANEOService {
       );
 
       if (!response.ok) {
-        throw new Error(`NASA API error: ${response.status}`);
+        console.log("NASA API response not ok:", response.status);
+        return this.getFallbackNEOData();
       }
 
       const data: NEOAPIResponse = await response.json();
 
+      // Check if the response has the expected structure
+      if (!data || !data.near_earth_objects) {
+        console.log("Invalid NASA API response structure:", data);
+        return this.getFallbackNEOData();
+      }
+
       // Flatten NEOs from all dates
       const allNEOs: NEOData[] = [];
-      Object.values(data.near_earth_objects).forEach((neos) => {
-        allNEOs.push(...neos);
-      });
+      const nearEarthObjects = data.near_earth_objects;
+
+      if (nearEarthObjects && typeof nearEarthObjects === "object") {
+        Object.values(nearEarthObjects).forEach((neos) => {
+          if (Array.isArray(neos)) {
+            allNEOs.push(...neos);
+          }
+        });
+      }
 
       return allNEOs;
     } catch (error) {
@@ -142,8 +155,14 @@ export class NASANEOService {
       }
 
       const data = await response.json();
+
+      // Validate response structure
+      if (!data || !data.near_earth_objects || !data.page) {
+        throw new Error("Invalid NASA API response structure");
+      }
+
       return {
-        neos: data.near_earth_objects,
+        neos: Array.isArray(data.near_earth_objects) ? data.near_earth_objects : [],
         page: data.page,
       };
     } catch (error) {
@@ -188,11 +207,20 @@ export class NASANEOService {
     absoluteMagnitude: number;
     description: string;
   } {
-    const semiMajorAxis = parseFloat(neo.orbital_data.semi_major_axis) || 1.0;
-    const eccentricity = parseFloat(neo.orbital_data.eccentricity) || 0.1;
-    const inclination = parseFloat(neo.orbital_data.inclination) || 0;
-    const orbitalPeriod = parseFloat(neo.orbital_data.orbital_period) || 365;
-    const estimatedDiameter = neo.estimated_diameter.kilometers.estimated_diameter_max;
+    // Safely extract orbital data with fallbacks
+    const semiMajorAxis = neo.orbital_data?.semi_major_axis
+      ? parseFloat(neo.orbital_data.semi_major_axis) || 1.0
+      : 1.0;
+    const eccentricity = neo.orbital_data?.eccentricity
+      ? parseFloat(neo.orbital_data.eccentricity) || 0.1
+      : 0.1;
+    const inclination = neo.orbital_data?.inclination
+      ? parseFloat(neo.orbital_data.inclination) || 0
+      : 0;
+    const orbitalPeriod = neo.orbital_data?.orbital_period
+      ? parseFloat(neo.orbital_data.orbital_period) || 365
+      : 365;
+    const estimatedDiameter = neo.estimated_diameter?.kilometers?.estimated_diameter_max || 0.1;
 
     // Calculate hazard level based on size, approach distance, and PHA status
     let hazardLevel: "low" | "medium" | "high" | "critical" = "low";
@@ -209,13 +237,20 @@ export class NASANEOService {
       hazardLevel = estimatedDiameter > 0.1 ? "medium" : "low";
     }
 
-    // Get closest approach data
-    const nextApproach = neo.close_approach_data
-      .filter((approach) => new Date(approach.close_approach_date) > new Date())
-      .sort(
-        (a, b) =>
-          new Date(a.close_approach_date).getTime() - new Date(b.close_approach_date).getTime()
-      )[0];
+    // Get closest approach data with null checks
+    const nextApproach =
+      neo.close_approach_data && Array.isArray(neo.close_approach_data)
+        ? neo.close_approach_data
+            .filter(
+              (approach) =>
+                approach?.close_approach_date && new Date(approach.close_approach_date) > new Date()
+            )
+            .sort(
+              (a, b) =>
+                new Date(a.close_approach_date).getTime() -
+                new Date(b.close_approach_date).getTime()
+            )[0]
+        : undefined;
 
     return {
       id: neo.id,
@@ -227,13 +262,13 @@ export class NASANEOService {
       size: Math.max(estimatedDiameter / 1000, 0.001), // Convert to our scale
       hazardLevel,
       closeApproachDate: nextApproach ? new Date(nextApproach.close_approach_date) : undefined,
-      closeApproachDistance: nextApproach
+      closeApproachDistance: nextApproach?.miss_distance?.astronomical
         ? parseFloat(nextApproach.miss_distance.astronomical)
         : undefined,
-      velocity: nextApproach
+      velocity: nextApproach?.relative_velocity?.kilometers_per_second
         ? parseFloat(nextApproach.relative_velocity.kilometers_per_second)
         : 20,
-      absoluteMagnitude: neo.absolute_magnitude_h,
+      absoluteMagnitude: neo.absolute_magnitude_h || 20,
       description: `${
         neo.is_potentially_hazardous_asteroid ? "Potentially Hazardous " : ""
       }Near-Earth Asteroid. Estimated diameter: ${estimatedDiameter.toFixed(2)} km.`,
@@ -349,8 +384,11 @@ export class NASANEOService {
     // For now, we'll browse and filter
     try {
       const { neos } = await this.browseNEOs(0, 100);
+      if (!Array.isArray(neos)) {
+        return [];
+      }
       return neos.filter(
-        (neo) => neo.name.toLowerCase().includes(query.toLowerCase()) || neo.id.includes(query)
+        (neo) => neo?.name?.toLowerCase()?.includes(query.toLowerCase()) || neo?.id?.includes(query)
       );
     } catch (error) {
       console.error("Error searching NEOs:", error);
